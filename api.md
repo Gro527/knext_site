@@ -1,6 +1,6 @@
 # 知识抽取工具api文档
 
-##用户管理类
+## 用户管理类
 #### 1. 用户注册
 		uri: /api/v1/signup
 		method: POST
@@ -60,7 +60,7 @@
 			}
 		}
 
-##知识抽取功能
+## 知识抽取功能
 #### 1. 知识抽取接口
 		//login required
 		uri: /api/v1/extract
