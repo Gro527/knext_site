@@ -1,9 +1,12 @@
-from knext_site.db.mappers import iUser
+from knext_site.db import mappers
 from knext_site.db.core import ss
-from sqlalchemy import _or
 from sqlalchemy.inspection import inspect
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import mapper
+from sqlalchemy import desc
+import hashlib
 import logging
+
 
 class Serializer(object):
     '''
@@ -50,13 +53,14 @@ class DataMixin(object):
     def _query(cls, filters=[], order_by=None, offset=None, limit=None, join=None):
         if not isinstance(filters, list):
             filters = [filters]
-        ss.query(cls).filter(*filters)
+        query = ss.query(cls).filter(*filters)
         if order_by is not None:
             query = query.order_by(order_by)
         if join is not None:
             query = query.join(join)
         if offset and limit:
             query = query.offset(offset).limit(limit)
+        return query
     
     @classmethod
     def query(cls, filters=[], order_by=None, offset=None, limit=None, join=None):
@@ -110,10 +114,45 @@ class DataMixin(object):
         
 
 class User(Serializer, DataMixin):
-    def __init__(self, input):
-        self.username = input.get('username')
-        self.password = input.get('password')
+    def __init__(self, data):
+        self.username = data.get('username')
+        self.password = data.get('password')
+        self.pw_sha1 = self.gen_sha1(self.password)
 
     def gen_sha1(self, password):
-        return hashlib.sha1(password)
+        encoder = hashlib.sha1()
+        encoder.update(password)
+        return encoder.hexdigest()
+
+    @classmethod
+    def get_by_username(cls, username):
+        filters = []
+        filters.append(User.username == username)
+
+        users = cls.query(
+            filters,
+            order_by=desc(User.create_time)
+        )
+        if users:
+            return users[0]
+        return None
+    
+    @classmethod
+    def login(cls, username, password):
+        user = cls.get_by_username(username)
+        if not user:
+            print 111
+            return None
+        input_sha1 = user.gen_sha1(password)
+        print input_sha1
+        print user.pw_sha1
+        if input_sha1 == user.pw_sha1:
+            return user
+        return None
+
+
+
+
+
+mapper(User, mappers.User)
 
