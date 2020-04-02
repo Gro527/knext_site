@@ -70,6 +70,7 @@
 		}
 		payload: {
 			"text": string, 	//需要进行抽取的文本
+			"model_type": string, 		//模型类型
 		}
 		response: {
 			"status": int,
@@ -95,6 +96,7 @@
 		}
 		payload: {
 			"text": string, 	//需要进行标注的文本
+			"model_type": string,
 			"kn": [{
 					"subject": string, 	//知识主体
 					"relation": string, 	//关系
@@ -118,6 +120,7 @@
 		}
 		payload: {
 			"text": string, 	//需要进行badcase标注的文本
+			"model_type": string,
 			"kn": [{
 					"subject": string, 	//知识主体
 					"relation": string, 	//关系
