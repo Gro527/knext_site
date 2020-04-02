@@ -9,7 +9,7 @@ def require_login(function):
     def warp(*args, **kwargs):
         if session.get(request.cookies.get('session_id')) == None:
             resp = make_response(
-                jsonify(message='Please login first!')
+                jsonify(status=-1, message='Please login first!')
             )
             resp.status_code = 401
             return resp
